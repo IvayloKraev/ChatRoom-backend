@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
-
+set(HEADER_DIR "${PROJECT_SOURCE_DIR}/inc")
 
 file(GLOB SOURCES "${SOURCE_DIR}/*.cpp")
 
@@ -34,7 +34,13 @@ FetchContent_MakeAvailable(json ixwebsocket)
 
 # Link the project
 
-add_executable(ChatRoom_backend ${SOURCE_DIR}/main.cpp)
+add_executable(ChatRoom_backend ${SOURCE_DIR}/main.cpp ${SOURCES})
+
+target_include_directories(
+        ChatRoom_backend
+        PRIVATE
+        ${HEADER_DIR}
+)
 
 target_link_libraries(
         ChatRoom_backend
