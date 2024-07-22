@@ -21,7 +21,7 @@ namespace wsServer
 
         extern std::thread sendThread;
 
-        void routeClientMessage(const std::shared_ptr<ix::ConnectionState>&, ix::WebSocket&, const ix::WebSocketMessagePtr&);
+        void routeClientMessage(const std::shared_ptr<ix::ConnectionState>&, const ix::WebSocket&, const ix::WebSocketMessagePtr&);
         void sendMessage();
     }
 }
