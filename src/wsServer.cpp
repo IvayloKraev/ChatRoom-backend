@@ -4,13 +4,15 @@ namespace wsServer
 {
     void init()
     {
-        _inner::srv = std::make_unique<ix::WebSocketServer>(4000, "0.0.0.0");
+        _inner::srv = std::make_unique<ix::WebSocketServer>();
         _inner::srv->setOnClientMessageCallback(_inner::routeClientMessage);
 
         if (!_inner::srv->listenAndStart())
         {
             throw std::runtime_error("Server is not working");
         }
+
+        _inner::sendThread = std::thread(_inner::sendMessage);
     };
 
     namespace _inner
@@ -18,6 +20,8 @@ namespace wsServer
         std::unique_ptr<ix::WebSocketServer> srv;
 
         std::thread sendThread;
+
+        DataWraper<std::string> clientChatMessage;
 
         void routeClientMessage(
             const std::shared_ptr<ix::ConnectionState>& connectionState,
@@ -28,6 +32,7 @@ namespace wsServer
             {
             case ix::WebSocketMessageType::Message:
                 std::cout << "New message recived:" << std::endl << webSocketMessage->str << std::endl;
+                _inner::clientChatMessage.push(webSocketMessage->str);
                 break;
             case ix::WebSocketMessageType::Open:
                 std::cout << "New connection opened" << std::endl;
@@ -50,9 +55,16 @@ namespace wsServer
             }
         }
 
-        void sendMessage()
+        [[noreturn]] void sendMessage()
         {
-
+            while(true)
+            {
+                auto message = _inner::clientChatMessage.pop();
+                for(const auto& client : _inner::srv->getClients())
+                {
+                    client->send(message);
+                }
+            }
         }
     }
 }

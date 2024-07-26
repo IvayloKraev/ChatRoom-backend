@@ -11,6 +11,8 @@
 #include "ixwebsocket/IXConnectionState.h"
 #include "ixwebsocket/IXWebSocketServer.h"
 
+#include "dataWraper.hpp"
+
 namespace wsServer
 {
     void init();
@@ -21,8 +23,10 @@ namespace wsServer
 
         extern std::thread sendThread;
 
+        extern DataWraper<std::string> clientChatMessage;
+
         void routeClientMessage(const std::shared_ptr<ix::ConnectionState>&, const ix::WebSocket&, const ix::WebSocketMessagePtr&);
-        void sendMessage();
+        [[noreturn]] void sendMessage();
     }
 }
 
